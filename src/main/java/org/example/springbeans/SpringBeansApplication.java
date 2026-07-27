@@ -46,6 +46,9 @@ public class SpringBeansApplication {
         log.info("Реальный класс: {}", repository.getClass());
         log.info("Это JDK Dynamic Proxy? -> {}", AopUtils.isJdkDynamicProxy(repository));
         log.info("Интерфейсы прокси: {}", Arrays.toString(repository.getClass().getInterfaces()));
+        // Реальный вызов метода — сработает наш доп. слой прокси из LifecycleLoggingBeanPostProcessor
+        long count = repository.count();
+        log.info("repository.count() = {}", count);
 
         log.info("=== 🤔 Обратите внимание: HeavyLazyBean еще НЕ СОЗДАН в логах выше! ===");
         Thread.sleep(1000); // пауза для наглядности в логах
