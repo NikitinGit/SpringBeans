@@ -14,15 +14,16 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 @Component("businessService")
-@DependsOn("infrastructureBean")
+//@DependsOn("infrastructureBean")
 public class BusinessService implements BeanNameAware, InitializingBean, DisposableBean { // Принудительно создаем ПОСЛЕ инфраструктуры
     private static final Logger log = LoggerFactory.getLogger(BusinessService.class);
 
-    @Autowired
-    private InfrastructureBean infrastructureBean;
+    //@Autowired
+    private final InfrastructureBean infrastructureBean;
 
-    public BusinessService() {
+    public BusinessService(InfrastructureBean infrastructureBean) {
         log.info("[2. BusinessService] -> 🛠️ ВЫЗОВ КОНСТРУКТОРА");
+        this.infrastructureBean = infrastructureBean;
     }
 
     @Override
