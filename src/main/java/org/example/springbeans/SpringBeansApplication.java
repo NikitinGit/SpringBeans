@@ -1,11 +1,14 @@
 package org.example.springbeans;
 
+import org.example.springbeans.bean.config.Greeting;
 import org.example.springbeans.bean.life.circle.BusinessService;
 import org.example.springbeans.bean.life.circle.HeavyLazyBean;
 import org.example.springbeans.bean.repo.DemoRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -49,6 +52,23 @@ public class SpringBeansApplication {
         // Реальный вызов метода — сработает наш доп. слой прокси из LifecycleLoggingBeanPostProcessor
         long count = repository.count();
         log.info("repository.count() = {}", count);
+
+        // 2.6 Смотрим на реальные поля BeanDefinition ("рецепт") — без единой строчки XML
+        ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+
+        BeanDefinition viaBeanMethod = beanFactory.getBeanDefinition("greetingFromBeanMethod");
+        log.info("=== 📄 BeanDefinition 'greetingFromBeanMethod' (создан через @Bean-метод) ===");
+        log.info("beanClassName: {}", viaBeanMethod.getBeanClassName());
+        log.info("factoryBeanName: {}", viaBeanMethod.getFactoryBeanName());
+        log.info("factoryMethodName: {}", viaBeanMethod.getFactoryMethodName());
+        log.info("message бина: {}", context.getBean("greetingFromBeanMethod", Greeting.class).getMessage());
+
+        BeanDefinition viaRegistrar = beanFactory.getBeanDefinition("greetingFromRegistrar");
+        log.info("=== 📄 BeanDefinition 'greetingFromRegistrar' (зарегистрирован программно) ===");
+        log.info("beanClassName: {}", viaRegistrar.getBeanClassName());
+        log.info("Generic ConstructorArgumentValues: {}", viaRegistrar.getConstructorArgumentValues().getGenericArgumentValues());
+        log.info("Indexed ConstructorArgumentValues: {}", viaRegistrar.getConstructorArgumentValues().getIndexedArgumentValues());
+        log.info("message бина: {}", context.getBean("greetingFromRegistrar", Greeting.class).getMessage());
 
         log.info("=== 🤔 Обратите внимание: HeavyLazyBean еще НЕ СОЗДАН в логах выше! ===");
         Thread.sleep(1000); // пауза для наглядности в логах
