@@ -1,10 +1,10 @@
 spring:
   application:
     name: SpringBeans
-logging:
-  level:
-    org:
-      springframework:
-        context: DEBUG
-        beans:
-          factory: DEBUG   # создание/инициализация бинов
+#logging:
+#  level:
+#    org:
+#      springframework:
+#        context: DEBUG
+#        beans:
+#          factory: DEBUG   # создание/инициализация бинов
