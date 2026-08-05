@@ -4,6 +4,7 @@ import org.example.springbeans.bean.config.Greeting;
 import org.example.springbeans.bean.life.circle.BusinessService;
 import org.example.springbeans.bean.life.circle.HeavyLazyBean;
 import org.example.springbeans.bean.repo.DemoRepository;
+import org.example.springbeans.bean.repo.EntityProxyDemo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
@@ -13,7 +14,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.util.ClassUtils;
 
+import java.lang.reflect.Proxy;
 import java.util.Arrays;
 
 @SpringBootApplication
@@ -27,6 +30,16 @@ public class SpringBeansApplication {
         // 1. Запускаем приложение и получаем управление над контекстом
         ConfigurableApplicationContext context = SpringApplication.run(SpringBeansApplication.class, args);
         log.info("=== 🟢 SPRING КОНТЕКСТ УСПЕШНО ЗАПУЩЕН ===");
+
+        // Все бины проекта — без форсирования ленивых бинов (getType(name, false) не создаёт объект)
+        log.info("=== 📋 Бины проекта (org.example.springbeans) ===");
+        for (String name : context.getBeanDefinitionNames()) {
+            Class<?> type = context.getBeanFactory().getType(name, false);
+            if (type != null && type.getName().startsWith("org.example.springbeans")) {
+                boolean isProxy = Proxy.isProxyClass(type) || type.getName().contains(ClassUtils.CGLIB_CLASS_SEPARATOR);
+                log.info(" - {} -> {} (прокси: {})", name, type.getSimpleName(), isProxy);
+            }
+        }
 
         // 2. Достаем бизнес-сервис и вызываем его метод
         BusinessService service = context.getBean(BusinessService.class);
@@ -69,6 +82,8 @@ public class SpringBeansApplication {
         log.info("Generic ConstructorArgumentValues: {}", viaRegistrar.getConstructorArgumentValues().getGenericArgumentValues());
         log.info("Indexed ConstructorArgumentValues: {}", viaRegistrar.getConstructorArgumentValues().getIndexedArgumentValues());
         log.info("message бина: {}", context.getBean("greetingFromRegistrar", Greeting.class).getMessage());
+
+        context.getBean(EntityProxyDemo.class).showHibernateProxy();
 
         log.info("=== 🤔 Обратите внимание: HeavyLazyBean еще НЕ СОЗДАН в логах выше! ===");
         Thread.sleep(1000); // пауза для наглядности в логах
