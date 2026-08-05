@@ -35,9 +35,14 @@ public class SpringBeansApplication {
         log.info("=== 📋 Бины проекта (org.example.springbeans) ===");
         for (String name : context.getBeanDefinitionNames()) {
             Class<?> type = context.getBeanFactory().getType(name, false);
-            if (type != null && type.getName().startsWith("org.example.springbeans")) {
+            boolean isProjectType = type != null && type.getName().startsWith("org.example.springbeans");
+            boolean isJpaRelated = name.toLowerCase().contains("entitymanager"); // тип чужой (JDK-прокси), фильтруем по имени бина
+            if (type != null && (isProjectType || isJpaRelated)) {
                 boolean isProxy = Proxy.isProxyClass(type) || type.getName().contains(ClassUtils.CGLIB_CLASS_SEPARATOR);
                 log.info(" - {} -> {} (прокси: {})", name, type.getSimpleName(), isProxy);
+                if (isProxy) {
+                    log.info("     интерфейсы прокси: {}", Arrays.toString(type.getInterfaces()));
+                }
             }
         }
 
