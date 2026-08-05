@@ -8,6 +8,7 @@ import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.SmartInitializingSingleton;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +17,9 @@ import org.springframework.stereotype.Component;
 class InfrastructureBean implements BeanNameAware, InitializingBean, DisposableBean, SmartInitializingSingleton {
     private static final Logger log = LoggerFactory.getLogger(InfrastructureBean.class);
     public static int count;
+
+    @Autowired
+    private AfterPropertiesSet afterPropertiesSet;
 
     public InfrastructureBean() {
         // Собрать конфиг (HikariConfig: jdbcUrl/username/pool size) — без реального сетевого вызова, только объект-настройка
@@ -31,13 +35,14 @@ class InfrastructureBean implements BeanNameAware, InitializingBean, DisposableB
     @PostConstruct
     public void init() {
         // Реально открыть соединения: dataSource.getConnection() + "SELECT 1", прогреть min-idle пул
-        log.info("[1. Infrastructure] -> 🚀 @PostConstruct (База данных / Сеть готовы)");
+        log.info("[1. Infrastructure] -> 🚀 @PostConstruct ;{}", afterPropertiesSet);
+        afterPropertiesSet.test();
     }
 
     @Override
     public void afterPropertiesSet() {
         // Финальная проверка перед тем как отдать бин наружу: если пул не прогрелся — бросить исключение и остановить старт приложения
-        log.info("[1. Infrastructure] -> ✅ InitializingBean.afterPropertiesSet");
+        log.info("[1. Infrastructure] -> ✅ InitializingBean.afterPropertiesSet();{}", afterPropertiesSet);
     }
 
     public void doWork(int id) {
