@@ -49,6 +49,7 @@ public class SpringBeansApplication {
         // 2. Достаем бизнес-сервис и вызываем его метод
         BusinessService service = context.getBean(BusinessService.class);
         service.doWork();
+        service.testAspect();
         // 1. Проверяем, прокси ли это вообще
         log.info("Это прокси? -> {}", AopUtils.isAopProxy(service));
 
@@ -60,6 +61,14 @@ public class SpringBeansApplication {
 
         // 4. Узнаем имя реального класса под оберткой
         log.info("Настоящий класс под прокси: {}", AopUtils.getTargetClass(service).getName());
+        log.info(
+                "Advisors на прокси businessService: {}",
+                Arrays.toString(
+                        (
+                                (org.springframework.aop.framework.Advised) service
+                        ).getAdvisors()
+                )
+        );
 
         // 2.5 Проверяем DemoRepository — proxy-only бин без реального класса-реализации
         DemoRepository repository = context.getBean(DemoRepository.class);

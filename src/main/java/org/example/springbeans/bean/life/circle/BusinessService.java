@@ -2,6 +2,7 @@ package org.example.springbeans.bean.life.circle;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import org.example.springbeans.aspect.AspectBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component("businessService")
 //@DependsOn("infrastructureBean")
@@ -56,5 +58,11 @@ public class BusinessService implements BeanNameAware, InitializingBean, Disposa
         log.info("[2. BusinessService] -> 💼 Выполняю важную работу...");
         infrastructureBean.doWork(25);
         log.info("infrastructureBean Это прокси? -> {}", AopUtils.isAopProxy(infrastructureBean));
+    }
+
+    @Transactional
+    @AspectBean(getName = "nikotin")
+    public void testAspect() {
+        System.out.println("testAspect;");
     }
 }
