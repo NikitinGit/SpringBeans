@@ -50,6 +50,7 @@ public class SpringBeansApplication {
         BusinessService service = context.getBean(BusinessService.class);
         service.doWork();
         service.testAspect();
+        service.selfInvokeTestAspect();
         // 1. Проверяем, прокси ли это вообще
         log.info("Это прокси? -> {}", AopUtils.isAopProxy(service));
 

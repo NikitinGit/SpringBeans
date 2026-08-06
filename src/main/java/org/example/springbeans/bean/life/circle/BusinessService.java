@@ -61,9 +61,16 @@ public class BusinessService implements BeanNameAware, InitializingBean, Disposa
         log.info("infrastructureBean Это прокси? -> {}", AopUtils.isAopProxy(infrastructureBean));
     }
 
+    @Transactional
     @AspectBean(getName = "nikotin")
     public void testAspect() {
         System.out.println("testAspect; транзакция активна? -> " + TransactionSynchronizationManager.isActualTransactionActive());
         infrastructureBean.doWorkTransaction();
+    }
+
+    // Self-invocation: вызов testAspect() через this, а не через прокси из контекста
+    public void selfInvokeTestAspect() {
+        System.out.println("=== selfInvokeTestAspect: вызываю this.testAspect() напрямую ===");
+        this.testAspect();
     }
 }
