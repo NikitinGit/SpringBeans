@@ -11,6 +11,8 @@ import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Component("infrastructureBean")
 //@Scope("prototype")
@@ -48,6 +50,11 @@ class InfrastructureBean implements BeanNameAware, InitializingBean, DisposableB
     public void doWork(int id) {
         // Взять соединение из пула, выполнить запрос, вернуть соединение обратно в пул
         log.info("[1. Infrastructure] -> InfrastructureBean.doWork(int id) Business id:{}", id);
+    }
+
+    @Transactional
+    public void doWorkTransaction() {
+        System.out.println("[1. Infrastructure] ->; транзакция активна? -> " + TransactionSynchronizationManager.isActualTransactionActive());
     }
 
     @PreDestroy

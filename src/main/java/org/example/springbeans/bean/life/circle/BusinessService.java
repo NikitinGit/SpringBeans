@@ -14,6 +14,7 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Component("businessService")
 //@DependsOn("infrastructureBean")
@@ -60,9 +61,9 @@ public class BusinessService implements BeanNameAware, InitializingBean, Disposa
         log.info("infrastructureBean Это прокси? -> {}", AopUtils.isAopProxy(infrastructureBean));
     }
 
-    @Transactional
     @AspectBean(getName = "nikotin")
     public void testAspect() {
-        System.out.println("testAspect;");
+        System.out.println("testAspect; транзакция активна? -> " + TransactionSynchronizationManager.isActualTransactionActive());
+        infrastructureBean.doWorkTransaction();
     }
 }
