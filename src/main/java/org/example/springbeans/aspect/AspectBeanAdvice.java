@@ -14,6 +14,7 @@ public class AspectBeanAdvice {
 
     @Before("@annotation(testAspect)")
     public void checkAspect(JoinPoint joinpoint, AspectBean testAspect) {
+        System.out.println("AspectBean.name = " + AspectBean.name);
         Class<?> testClass = joinpoint.getSignature().getDeclaringType();
         if (testClass != null) {
             System.out.println("AspectBeanAdvice, транзакция активна? -> " + TransactionSynchronizationManager.isActualTransactionActive());
